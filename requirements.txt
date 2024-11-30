@@ -1,0 +1,10 @@
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+python-docx==0.8.11
+PyPDF2==3.0.1
+langchain==0.0.335
+tavily-python==0.1.9
+boto3==1.29.3
+pydantic==2.5.1
+python-dotenv==1.0.0
