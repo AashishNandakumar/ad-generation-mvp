@@ -1,16 +1,15 @@
 from typing import Dict, Any
 from langchain.agents import initialize_agent, Tool
-from langchain.llms import Bedrock
-from langchain.chains import LLMChain
+from langchain_community.llms import Bedrock
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 from typing import List
-from ..prompts.trend_prompts import TREND_ANALYSIS_PROMPT, TREND_REFINEMENT_PROMPT
+from langchain_core.runnables import RunnablePassthrough
+from ..prompts.trend_prompts import TREND_ANALYSIS_PROMPT
 from ..utils.data_formatter import DataFormatter
 from ...config import settings
 import tavily
-import json
 
 
 class TrendAnalysis(BaseModel):
@@ -111,28 +110,35 @@ class TrendAgent:
                 },
             )
 
-            # Run initial analysis
-            chain = LLMChain(llm=self.llm, prompt=prompt)
-            print(chain)
-            analysis_response = await chain.arun(
-                guidelines=guidelines, region=region, campaign=campaign_details
+            # Create the chain
+            chain = (
+                RunnablePassthrough().assign(
+                    guidelines=lambda _: guidelines,
+                    region=lambda _: region,
+                    campaign=lambda _: campaign_details,
+                )
+                | prompt
+                | self.llm
             )
-            print(f"a-{analysis_response}")
+
+            # Invoke with a dictionary as input
+            input_data = {
+                "guidelines": guidelines,
+                "region": region,
+                "campaign": campaign_details,
+            }
+            analysis_response = chain.invoke(input_data)
+            print(analysis_response)
+
             # Parse the response using the output parser
             parsed_response = self.output_parser.parse(analysis_response)
-            print(parsed_response)
+            # print(parsed_response)
 
-            # Convert to dictionary
+            # Rest of your code remains the same
             trend_data = parsed_response.dict()
-
-            # Search for additional trend data
             search_query = f"latest advertising trends {region} {trend_data.get('market_trends', [''])[0]}"
             search_results = await self._search_trends(search_query)
-
-            # Combine and format results
             combined_data = {**trend_data, "search_insights": search_results}
-
-            # Format data for image generation
             return await self._format_trend_data(combined_data)
 
         except Exception as e:
