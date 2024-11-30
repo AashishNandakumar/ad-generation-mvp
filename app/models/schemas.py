@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Any
 from enum import Enum
 
 
@@ -23,5 +23,5 @@ class AdGenerationRequest(BaseModel):
 
 
 class GeneratedAd(BaseModel):
-    image_urls: List[str]
+    image_urls: List[str] | Any
     metadata: dict

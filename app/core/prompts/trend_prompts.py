@@ -13,8 +13,7 @@ TREND_ANALYSIS_PROMPT = """
     Provide a structured analysis following the exact format specified in the format instructions below.
     Make sure to include all required fields and format them according to the schema.
 
-    Format the extracted information in the following structure:
-    {format_instructions}
+    PS: if content not available please use default values as specified, never return nil values
 """
 
 TREND_REFINEMENT_PROMPT = """

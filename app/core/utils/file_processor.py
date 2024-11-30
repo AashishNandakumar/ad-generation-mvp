@@ -6,22 +6,22 @@ from io import BytesIO
 
 class FileProcessor:
     @staticmethod
-    async def process_file(file: UploadFile) -> str:
+    def process_file(file: UploadFile) -> str:
         """Process uploaded file and extract text content."""
-        content = await file.read()
+        content = file.file.read()
         file_extension = file.filename.split(".")[-1].lower()
 
         if file_extension == "pdf":
-            return await FileProcessor._process_pdf(content)
+            return FileProcessor._process_pdf(content)
         elif file_extension == "docx":
-            return await FileProcessor._process_docx(content)
+            return FileProcessor._process_docx(content)
         elif file_extension == "txt":
             return content.decode("utf-8")
 
         raise ValueError(f"Unsupported file type: {file_extension}")
 
     @staticmethod
-    async def _process_pdf(content: bytes) -> str:
+    def _process_pdf(content: bytes) -> str:
         """Extract text from PDF file."""
         try:
             pdf_file = BytesIO(content)
@@ -36,7 +36,7 @@ class FileProcessor:
             pdf_file.close()
 
     @staticmethod
-    async def _process_docx(content: bytes) -> str:
+    def _process_docx(content: bytes) -> str:
         """Extract text from DOCX file."""
         try:
             doc_file = BytesIO(content)
