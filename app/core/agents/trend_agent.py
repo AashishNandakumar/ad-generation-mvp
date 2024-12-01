@@ -112,6 +112,7 @@ class TrendAgent:
                     "format_instructions": self.output_parser.get_format_instructions()
                 },
             )
+            # print(prompt)
             # Create the chain
             chain = (
                 RunnablePassthrough().assign(
@@ -122,6 +123,7 @@ class TrendAgent:
                 | prompt
                 | self.llm
             )
+            # print(chain)
 
             input_data = {
                 "guidelines": guidelines,
@@ -130,15 +132,7 @@ class TrendAgent:
             }
 
             analysis_response = chain.invoke(input_data)
-            print(f"analysis response: {analysis_response}")
-
-            # Invoke with a dictionary as input
-            input_data = {
-                "guidelines": guidelines,
-                "region": region,
-                "campaign": campaign_details,
-            }
-            print("Analysis response:", analysis_response)
+            print(analysis_response)
 
             # # Ensure all fields are present before parsing
             # response_data = {
